@@ -5,9 +5,6 @@ export const apiCall = async (endpoint, options = {}) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    // This ensures cookies are sent with requests and set on responses
-    // However, since we are using vite proxy (same origin for the browser), this is true by default
-    // But it's good practice to keep it explicit for future-proofing.
   };
 
   const finalOptions = {
@@ -22,7 +19,6 @@ export const apiCall = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, finalOptions);
     
-    // Safely parse JSON, handling empty responses
     const text = await response.text();
     const data = text ? JSON.parse(text) : {};
     
@@ -55,5 +51,53 @@ export const authAPI = {
     apiCall('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData)
+    }),
+
+  logout: () =>
+    apiCall('/auth/logout', {
+      method: 'POST'
+    }),
+
+  getMe: () =>
+    apiCall('/auth/me', {
+      method: 'GET'
+    })
+};
+
+export const productAPI = {
+  getProducts: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.search) query.append('search', params.search);
+    if (params.timeframe) query.append('timeframe', params.timeframe);
+    if (params.category) query.append('category', params.category);
+    if (params.location) query.append('location', params.location);
+
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return apiCall(`/products${queryString}`, { method: 'GET' });
+  },
+
+  getStats: () =>
+    apiCall('/products/stats', { method: 'GET' }),
+
+  getProductById: (id) =>
+    apiCall(`/products/${id}`, { method: 'GET' }),
+
+  createProduct: (productData) =>
+    apiCall('/products', {
+      method: 'POST',
+      body: JSON.stringify(productData)
+    }),
+
+  updateProduct: (id, productData) =>
+    apiCall(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData)
+    }),
+
+  deleteProduct: (id) =>
+    apiCall(`/products/${id}`, {
+      method: 'DELETE'
     })
 };
