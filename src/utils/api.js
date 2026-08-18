@@ -3,6 +3,7 @@ const BASE_URL = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
 
 export const apiCall = async (endpoint, options = {}) => {
   const defaultOptions = {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
