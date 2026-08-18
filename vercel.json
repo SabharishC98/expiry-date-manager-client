@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/auth/:path*",
-      "destination": "https://expiry-date-express-server.onrender.com/auth/:path*"
+      "destination": "https://expiry-date-manager-server.onrender.com/auth/:path*"
     },
     {
       "source": "/products/:path*",
-      "destination": "https://expiry-date-express-server.onrender.com/products/:path*"
+      "destination": "https://expiry-date-manager-server.onrender.com/products/:path*"
     },
     {
       "source": "/(.*)",
