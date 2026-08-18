@@ -1,4 +1,5 @@
-const BASE_URL = ''; // using Vite proxy
+const rawUrl = import.meta.env.VITE_API_URL || '';
+const BASE_URL = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
 
 export const apiCall = async (endpoint, options = {}) => {
   const defaultOptions = {
@@ -17,10 +18,16 @@ export const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, finalOptions);
+    const url = endpoint.startsWith('/') ? `${BASE_URL}${endpoint}` : `${BASE_URL}/${endpoint}`;
+    const response = await fetch(url, finalOptions);
     
     const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
+    let data = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error(`Server returned invalid response (Status ${response.status}). Verify VITE_API_URL is configured on Vercel.`);
+    }
     
     if (!response.ok) {
       let errorMessage = 'An error occurred during the API call';
